@@ -1,28 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Background } from '../../components/Background';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 
 import logoImg from '../../assets/logo-nlw-esports.png';
 import { styles } from './styles';
 import { GameParams } from '../../@types/navigation';
-import { Image, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, TouchableOpacity, View } from 'react-native';
 import { THEME } from '../../theme';
+import { Heading } from '../../components/Heading';
+import { DouCard, DuoCardProps } from '../../components/DouCard';
 
 
 export function Game() {
+  const [duo, setDuos] = useState<DuoCardProps[]> ([])
 
+  const navigation = useNavigation();
   const route = useRoute();
   const game = route.params as GameParams;
 
+  function handleGoBack(){
+    navigation.goBack();
+  }
+
+  useEffect(() => {
+    fetch(`http://192.168.1.12:3333/games/${game.id}/ads`)
+    .then(response => response.json())
+    .then(data => setDuos(data));
+  }, []);
 
 
   return (
     <Background>
     <SafeAreaView style={styles.container}>
     <View style={styles.header}>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={handleGoBack}>
         <Entypo 
           name="chevron-thin-left"
           color={THEME.COLORS.CAPTION_300}
@@ -32,11 +45,29 @@ export function Game() {
 
       <Image
        source={logoImg}
-       style={styles.logo}
+       style={styles.logo} 
       />
-      
+    <View style={styles.right}/>
     </View>
     
+    <Image 
+      source={{uri: game.bannerUrl}}  
+      style={styles.cover}
+      resizeMode="cover"
+    />
+
+    <Heading 
+      title={game.title}
+      subtitle="Conecte-se e comece a jogar"
+    />
+
+    <FlatList 
+      data={duo}
+      keyExtractor={item => item.id}
+      renderItem={({ item }) => (
+        <DouCard data={item} />
+  )}
+    />
 
     </SafeAreaView>
     </Background>

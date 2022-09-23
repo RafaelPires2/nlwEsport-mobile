@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { CheckCircle } from 'phosphor-react-native';
 import * as ClipBoard from 'expo-clipboard';
 
+
 import { styles } from './styles';
 import { THEME } from '../../theme';
 import { Heading } from '../Heading';
